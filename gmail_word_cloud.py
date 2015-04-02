@@ -77,11 +77,11 @@ word_counts = defaultdict(lambda: 0)
 
 print "Parsing emails.."
 not_char = re.compile('[^a-z]')
-strip_punc = re.compile('[^a-z]\Z')
+strip_punc = re.compile('[^\w\d\-\.]\Z')
 for word in word_tokenize(corpus):
     word = word.lower()
-    word = re.sub( strip_punc, '', word)
-    if not_char.search(word): continue
+    #word = re.sub( strip_punc, '', word)
+    #if not_char.search(word): continue
     if word not in stopwords.words('english') and len(word) > 2 and len(word) < 20:
         word_counts[word] += 1
 
@@ -89,6 +89,7 @@ print "Creating wordcloud in wordcloud.png.."
 print word_counts
 wordcloud = WordCloud(font_path='OpenSans-Bold.ttf',
                       background_color='black',
+                      stopwords=stopwords.words('english'),
                       width=1800,
                       height=1400)
 wordcloud.fit_words(word_counts.items())
