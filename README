@@ -1,3 +1,5 @@
+The key different about this code is the graph is generated using emails from specific emails.
+
 0. You need to install Cython before because of word_cloud package
 1. Install packages from requirements.txt
 2. Download punkt and stopwords packages from nltk
