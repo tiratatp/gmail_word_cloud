@@ -1,6 +1,5 @@
-Cython
 nltk
 numpy
 matplotlib
-Pillow
--e git://github.com/amueller/word_cloud.git#egg=wordcloud
+wordcloud
+tqdm
