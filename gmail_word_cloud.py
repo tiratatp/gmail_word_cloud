@@ -31,25 +31,26 @@ reply_line_regexp = re.compile(
     '(On ([A-Za-z]{3,12}(,)? )?(([A-Za-z]{3,12} [0-3]?[0-9](,)?)|([0-3]?[0-9] [A-Za-z]{3,12}(,)?)) 20[0-9][0-9])|(-{4,})|(\>+)|(From:)')
 
 def get_first_text_block(email_message_instance):
+    charset = email_message_instance.get_content_charset('iso-8859-1')
     maintype = email_message_instance.get_content_maintype()
     if maintype == 'multipart':
         text = None
         for part in email_message_instance.get_payload():
             if part.get_content_maintype() == 'text':
-                text = part.get_payload()
+                text = part.get_payload(decode=True)
                 break
         if text is None:
             return None
     elif maintype == 'text':
-        text = email_message_instance.get_payload()
-    ret = re.split(reply_line_regexp, text)[0]
+        text = email_message_instance.get_payload(decode=True)
+    ret = re.split(reply_line_regexp, text.decode(charset, 'replace'))[0]
     return ret
 
 # login
 mail = imaplib.IMAP4_SSL('imap.gmail.com')
 while True:
     usr = input("Enter username (usually your full email): ")
-    pwd = getpass.getpass("Enter your password: ")
+    pwd = getpass.getpass("Enter your password (use an app password if two-factor auth is enabled): ")
     try:
         mail.login(usr, pwd)
         break
@@ -58,7 +59,7 @@ while True:
         exit(-1)
 
 print("Connected to gmail..")
-mail.select(args.mailbox)  # connect to all main
+mail.select(args.mailbox)  # connect to the mailbox
 if len(args.from_email) <= 1:
     search_query = f'(FROM "{args.from_email[0]}")'
 else:
